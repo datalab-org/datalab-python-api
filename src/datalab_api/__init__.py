@@ -1,4 +1,5 @@
 import warnings
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -9,8 +10,6 @@ __all__ = ("__version__", "DatalabClient")
 
 class DuplicateItemError(ValueError):
     """Raised when the API operation would create a duplicate item."""
-
-    pass
 
 
 class DatalabClient(BaseDatalabClient):
@@ -72,7 +71,7 @@ class DatalabClient(BaseDatalabClient):
         return items[item_type]
 
     def search_items(
-        self, query: str, item_types: Union[list[str], str] = ["samples", "cells"]
+        self, query: str, item_types: Union[Iterable[str], str] = ("samples", "cells")
     ) -> list[dict[str, Any]]:
         """Search for items of the given types that match the query.
 
@@ -115,7 +114,7 @@ class DatalabClient(BaseDatalabClient):
         new_item = {}
         if item_data is not None:
             new_item = item_data
-        new_item.update(**{"item_id": item_id, "type": item_type})
+        new_item.update({"item_id": item_id, "type": item_type})
 
         create_item_url = f"{self.datalab_api_url}/new-sample/"
         create_item_resp = self.session.post(
